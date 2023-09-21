@@ -4,16 +4,28 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const _ = require("lodash");
-
+const dotenv = require("dotenv");
+dotenv.config();
 const app = express();
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
-
+//console.log(process.env.MONGODB_PASSWORD);
 mongoose.set('strictQuery', true);
-mongoose.connect('mongodb://127.0.0.1:27017/todoListDB',{useNewUrlParser : true});
-
+const uri = `mongodb+srv://ksaiteja456:${process.env.MONGODB_PASSWORD}@cluster0.cpzrd0q.mongodb.net/?retryWrites=true&w=majority`;
+//mongoose.connect('mongodb://127.0.0.1:27017/todoListDB',{useNewUrlParser : true});
+try {
+  // Connect to the MongoDB cluster
+  mongoose.connect(
+    uri,
+    { useNewUrlParser: true, useUnifiedTopology: true },
+    () => console.log("Mongoose is connected")
+  );
+} 
+catch (e) {
+  console.log("could not connect");
+}
 const taskSchema = mongoose.Schema({
   name : String
 })
@@ -84,13 +96,25 @@ app.post("/", function(req, res){
     name : newTask
   })
   if(curList === "TODAY"){
-    task.save();
+    task.save(function(err) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Successfully Inserted new Item");
+      }
+    });
     res.redirect("/")
   }
   else{
     List.findOne({name:curList},function(err,foundList){
       foundList.tasks.push(task)
-      foundList.save()
+      foundList.save(function(err) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Successfully Inserted new Item");
+        }
+      });
       res.redirect("/"+curList)
     })
   }
