@@ -1,6 +1,8 @@
 [build]
 command = "npm run build" # Replace with your build command
 publish = "." # Replace with your static files directory
+functions = "functions"
+cache = { paths = ["node_modules/**/*"] }
 
 [context.production]
 command = "npm start" # Replace with your start command
