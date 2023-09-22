@@ -1,0 +1,9 @@
+[build]
+command = "npm run build" # Replace with your build command
+publish = "public" # Replace with your static files directory
+
+[context.production]
+command = "npm start" # Replace with your start command
+
+[context.development]
+command = "npm start" # Replace with your start command
